@@ -14,10 +14,6 @@
             margin: 0;
             background-color: #f4f4f4;
         }
-        .container {
-            display: flex;
-            gap: 20px;
-        }
         .game-container {
             text-align: center;
             padding: 20px;
@@ -26,15 +22,7 @@
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             width: 300px;
         }
-        .leaderboard {
-            width: 250px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        h1, h2 {
+        h1 {
             color: #333;
         }
         button {
@@ -63,37 +51,22 @@
         .back-button:hover {
             background-color: #0056b3;
         }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            padding: 5px;
-            border-bottom: 1px solid #ddd;
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="game-container">
-            <h1>Guess the Number Game</h1>
-            <label>Enter your name:</label>
-            <input type="text" id="username" placeholder="Your name">
-            <br><br>
-            <p>Guess a number between 1 and 100:</p>
-            <input type="number" id="userGuess" min="1" max="100">
-            <button onclick="checkGuess()">Submit Guess</button>
-            <p id="feedback"></p>
-            <p id="attempts">Attempts: 0</p>
-            <button id="restartButton" onclick="restartGame()" style="display: none;">Restart Game</button>
-            <br><br>
-            <a href="index.html"><button class="back-button">Back to Home</button></a>
-        </div>
-
-        <div class="leaderboard">
-            <h2>Leaderboard</h2>
-            <ul id="leaderboardList"></ul>
-        </div>
+    <div class="game-container">
+        <h1>Guess the Number Game</h1>
+        <label>Enter your name:</label>
+        <input type="text" id="username" placeholder="Your name">
+        <br><br>
+        <p>Guess a number between 1 and 100:</p>
+        <input type="number" id="userGuess" min="1" max="100">
+        <button onclick="checkGuess()">Submit Guess</button>
+        <p id="feedback"></p>
+        <p id="attempts">Attempts: 0</p>
+        <button id="restartButton" onclick="restartGame()" style="display: none;">Restart Game</button>
+        <br><br>
+        <a href="index.html"><button class="back-button">Back to Home</button></a>
     </div>
 
     <script>
@@ -107,7 +80,6 @@
             document.getElementById('attempts').textContent = `Attempts: 0`;
             document.getElementById('userGuess').value = '';
             document.getElementById('restartButton').style.display = 'none';
-            loadLeaderboard(); // Load leaderboard when the game starts
         }
 
         function checkGuess() {
@@ -139,31 +111,9 @@
                 feedback.textContent = `Congratulations ${username}! You guessed the number in ${attempts} attempts.`;
                 feedback.style.color = 'green';
                 document.getElementById('restartButton').style.display = 'inline-block';
-
-                saveScore(username, attempts);
             }
 
             document.getElementById('attempts').textContent = `Attempts: ${attempts}`;
-        }
-
-        function saveScore(username, attempts) {
-            fetch('save_score.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `username=${username}&attempts=${attempts}`
-            }).then(() => loadLeaderboard()); // Refresh leaderboard after saving
-        }
-
-        function loadLeaderboard() {
-            fetch('get_leaderboard.php')
-                .then(response => response.json())
-                .then(data => {
-                    const leaderboardList = document.getElementById('leaderboardList');
-                    leaderboardList.innerHTML = "";
-                    data.forEach(entry => {
-                        leaderboardList.innerHTML += `<li>${entry.attempts} attempts - ${entry.username}</li>`;
-                    });
-                });
         }
 
         function restartGame() {
