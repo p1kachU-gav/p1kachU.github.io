@@ -29,13 +29,23 @@
             background-color: #0056b3;
         }
     </style>
+    <script>
+        function checkPassword() {
+            let password = prompt("Enter the password to access:");
+            if (password === "MARCH282025") {
+                window.location.href = "c.html";
+            } else {
+                alert("Incorrect password. Access denied.");
+            }
+        }
+    </script>
 </head>
 <body>
     <h1>Welcome to Gavin's Home Page Hub</h1>
     <div class="button-container">
-        <a href="a.html"><button>Button 1</button></a>
-        <a href="b.html"><button>Button 2</button></a>
-        <a href="c.html"><button>Button 3</button></a>
+        <a href="a.html"><button>Game 1</button></a>
+        <a href="b.html"><button>Game 2</button></a>
+        <button onclick="checkPassword()">FOR MA. JANE LYKA B. CIMAGALA ONLY</button>
     </div>
 </body>
 </html>
