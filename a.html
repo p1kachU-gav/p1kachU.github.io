@@ -44,13 +44,17 @@
             border-radius: 5px;
             border: 1px solid #ccc;
         }
+        .back-button {
+            background-color: #007BFF;
+            margin-top: 10px;
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <h1>GAMES</h1>
-        <br/>
-        <br/>
         <h1>Guess the Number Game</h1>
         <p>Guess a number between 1 and 100:</p>
         <input type="number" id="userGuess" min="1" max="100">
@@ -59,7 +63,7 @@
         <p id="attempts">Attempts: 0</p>
         <button id="restartButton" onclick="restartGame()" style="display: none;">Restart Game</button>
         <br><br>
-        <h1><a href="b.html" target="_blank">GAME 2</a></h1>
+        <a href="index.html"><button class="back-button">Back to Home</button></a>
     </div>
     <script>
         let randomNumber;
@@ -110,4 +114,3 @@
     </script>
 </body>
 </html>
-
