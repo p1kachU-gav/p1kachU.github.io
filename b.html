@@ -1,1 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Top-Down RPG</title>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        canvas { 
+            background: #00AA00; 
+            display: block; 
+            width: 960px;
+            height: 720px;
+            border: 5px solid black;
+        }
+        #hud {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 20px;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #healthContainer {
+            width: 242px;
+            height: 24px;
+            background: black;
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 2px;
+            position: relative;
+        }
+        #healthBar {
+            height: 20px;
+            background: red;
+        }
+        #healthText {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        #timer {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="hud">
+        <div id="healthContainer">
+            <div id="healthBar"></div>
+            <div id="healthText">100 / 100</div>
+        </div>
+        <div id="timer">Time: 0s</div>
+    </div>
+    <h2>Controls:</h2>
+    <ul>
+        <li>Move Up: W / Arrow Up</li>
+        <li>Move Down: S / Arrow Down</li>
+        <li>Move Left: A / Arrow Left</li>
+        <li>Move Right: D / Arrow Right</li>
+        <li>Sprint: Shift</li>
+    </ul>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = 960;
+        canvas.height = 720;
 
+        const peps = {
+            user: { x: 120, y: 120, size: 72, speed: 4, sprintSpeed: 8, health: 100 },
+            joe: { x: 600, y: 360, size: 72, speed: 2 }
+        };
+        const keys = {};
+        let timer = 0;
+        let lastDamageTime = 0;
+        const damageCooldown = 500; // 500 milliseconds cooldown for taking damage
+
+        document.addEventListener("keydown", (e) => keys[e.code] = true);
+        document.addEventListener("keyup", (e) => keys[e.code] = false);
+        
+        function update() {
+            let currentSpeed = keys["ShiftLeft"] ? peps.user.sprintSpeed : peps.user.speed;
+            
+            if (keys["ArrowUp"] || keys["KeyW"]) peps.user.y = Math.max(0, peps.user.y - currentSpeed);
+            if (keys["ArrowDown"] || keys["KeyS"]) peps.user.y = Math.min(canvas.height - peps.user.size, peps.user.y + currentSpeed);
+            if (keys["ArrowLeft"] || keys["KeyA"]) peps.user.x = Math.max(0, peps.user.x - currentSpeed);
+            if (keys["ArrowRight"] || keys["KeyD"]) peps.user.x = Math.min(canvas.width - peps.user.size, peps.user.x + currentSpeed);
+            
+            let dx = peps.user.x - peps.joe.x;
+            let dy = peps.user.y - peps.joe.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance > 0) {
+                peps.joe.x += (dx / distance) * peps.joe.speed;
+                peps.joe.y += (dy / distance) * peps.joe.speed;
+            }
+            
+            if (distance < peps.user.size && Date.now() - lastDamageTime > damageCooldown) {
+                peps.user.health = Math.max(0, peps.user.health - 10);
+                lastDamageTime = Date.now();
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "black";
+            ctx.fillRect(peps.user.x - 2, peps.user.y - 2, peps.user.size + 4, peps.user.size + 4);
+            ctx.fillStyle = "red";
+            ctx.fillRect(peps.user.x, peps.user.y, peps.user.size, peps.user.size);
+            
+            ctx.fillStyle = "black";
+            ctx.fillRect(peps.joe.x - 2, peps.joe.y - 2, peps.joe.size + 4, peps.joe.size + 4);
+            ctx.fillStyle = "blue";
+            ctx.fillRect(peps.joe.x, peps.joe.y, peps.joe.size, peps.joe.size);
+
+            document.getElementById("healthBar").style.width = peps.user.health * 2.4 + "px";
+            document.getElementById("healthText").textContent = Math.round(peps.user.health) + " / 100";
+        }
+
+        function updateTimer() {
+            timer++;
+            document.getElementById("timer").textContent = "Time: " + timer + "s";
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+        
+        setInterval(updateTimer, 1000);
+        loop();
+    </script>
+</body>
+</html>
