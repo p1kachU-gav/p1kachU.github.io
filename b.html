@@ -33,7 +33,7 @@
             align-items: center;
         }
         #healthContainer {
-            width: 242px;
+            width: 204px;
             height: 24px;
             background: black;
             border: 2px solid white;
@@ -52,15 +52,28 @@
             width: 100%;
             text-align: center;
             color: white;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
         }
         #timer {
             margin-top: 10px;
         }
+        #backButton {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            font-size: 16px;
+            background: black;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
+    <button id="backButton" onclick="window.location.href='index.html'">Back to Home</button>
     <div id="hud">
         <div id="healthContainer">
             <div id="healthBar"></div>
@@ -84,13 +97,13 @@
         canvas.height = 720;
 
         const peps = {
-            user: { x: 120, y: 120, size: 72, speed: 4, sprintSpeed: 8, health: 100 },
-            joe: { x: 600, y: 360, size: 72, speed: 2 }
+            user: { x: 120, y: 120, size: 46.8, speed: 2.4, sprintSpeed: 4.8, health: 100 },
+            joe: { x: 600, y: 360, size: 46.8, speed: 1.2 }
         };
         const keys = {};
         let timer = 0;
         let lastDamageTime = 0;
-        const damageCooldown = 500; // 500 milliseconds cooldown for taking damage
+        const damageCooldown = 500; 
 
         document.addEventListener("keydown", (e) => keys[e.code] = true);
         document.addEventListener("keyup", (e) => keys[e.code] = false);
@@ -120,17 +133,18 @@
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            ctx.fillStyle = "black";
-            ctx.fillRect(peps.user.x - 2, peps.user.y - 2, peps.user.size + 4, peps.user.size + 4);
             ctx.fillStyle = "red";
             ctx.fillRect(peps.user.x, peps.user.y, peps.user.size, peps.user.size);
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(peps.user.x, peps.user.y, peps.user.size, peps.user.size);
             
-            ctx.fillStyle = "black";
-            ctx.fillRect(peps.joe.x - 2, peps.joe.y - 2, peps.joe.size + 4, peps.joe.size + 4);
             ctx.fillStyle = "blue";
             ctx.fillRect(peps.joe.x, peps.joe.y, peps.joe.size, peps.joe.size);
+            ctx.strokeStyle = "black";
+            ctx.strokeRect(peps.joe.x, peps.joe.y, peps.joe.size, peps.joe.size);
 
-            document.getElementById("healthBar").style.width = peps.user.health * 2.4 + "px";
+            document.getElementById("healthBar").style.width = peps.user.health * 2 + "px";
             document.getElementById("healthText").textContent = Math.round(peps.user.health) + " / 100";
         }
 
