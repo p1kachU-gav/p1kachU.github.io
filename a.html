@@ -56,18 +56,25 @@
 <body>
     <div class="game-container">
         <h1>Guess the Number Game</h1>
+        <label>Enter your name:</label>
+        <input type="text" id="username" placeholder="Your name">
+        <br><br>
         <p>Guess a number between 1 and 100:</p>
         <input type="number" id="userGuess" min="1" max="100">
         <button onclick="checkGuess()">Submit Guess</button>
         <p id="feedback"></p>
         <p id="attempts">Attempts: 0</p>
+        <p id="highscore">Best Score: -- (--)</p>
         <button id="restartButton" onclick="restartGame()" style="display: none;">Restart Game</button>
         <br><br>
         <a href="index.html"><button class="back-button">Back to Home</button></a>
     </div>
+
     <script>
         let randomNumber;
         let attempts;
+        let bestAttempts = localStorage.getItem("bestAttempts") || null;
+        let bestUser = localStorage.getItem("bestUser") || "--";
 
         function startGame() {
             randomNumber = Math.floor(Math.random() * 100) + 1;
@@ -76,12 +83,20 @@
             document.getElementById('attempts').textContent = `Attempts: 0`;
             document.getElementById('userGuess').value = '';
             document.getElementById('restartButton').style.display = 'none';
+            updateHighScore();
         }
 
         function checkGuess() {
             const userGuess = parseInt(document.getElementById('userGuess').value);
+            const username = document.getElementById('username').value.trim();
             const feedback = document.getElementById('feedback');
             const attemptsText = document.getElementById('attempts');
+
+            if (!username) {
+                feedback.textContent = 'Please enter your name!';
+                feedback.style.color = 'red';
+                return;
+            }
 
             if (isNaN(userGuess)) {
                 feedback.textContent = 'Please enter a valid number!';
@@ -98,12 +113,35 @@
                 feedback.textContent = 'Too high! Try again.';
                 feedback.style.color = 'red';
             } else {
-                feedback.textContent = `Congratulations! You guessed the number in ${attempts} attempts.`;
+                feedback.textContent = `Congratulations ${username}! You guessed the number in ${attempts} attempts.`;
                 feedback.style.color = 'green';
                 document.getElementById('restartButton').style.display = 'inline-block';
+
+                // Check for high score
+                if (!bestAttempts || attempts < bestAttempts) {
+                    bestAttempts = attempts;
+                    bestUser = username;
+                    localStorage.setItem("bestAttempts", bestAttempts);
+                    localStorage.setItem("bestUser", bestUser);
+                    updateHighScore();
+                }
+
+                saveScore(username, attempts);
             }
 
             attemptsText.textContent = `Attempts: ${attempts}`;
+        }
+
+        function updateHighScore() {
+            document.getElementById('highscore').textContent = `Best Score: ${bestAttempts || "--"} (${bestUser})`;
+        }
+
+        function saveScore(username, attempts) {
+            fetch('save_score.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${username}&attempts=${attempts}`
+            });
         }
 
         function restartGame() {
