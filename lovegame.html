@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Love Adventure 💖</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: #ffe6f2;
+            font-family: 'Arial', sans-serif;
+        }
+        canvas {
+            background: #ffccdd;
+            border: 3px solid #ff99bb;
+        }
+    </style>
+</head>
+<body>
+    <h1>💖 Love Adventure 💖</h1>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <p>Use arrow keys to move and collect all hearts! 💕</p>
+    
+    <!-- Back to Home Button -->
+    <a href="index.html">
+        <button style="margin-top: 20px; padding: 10px 20px; font-size: 14px; background-color: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            Back to Home
+        </button>
+    </a>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let player = { x: 50, y: 50, size: 20 };
+        let hearts = [];
+        let gameRestarting = false; // Flag to prevent multiple restarts
+
+        // Function to generate random hearts
+        function generateHearts() {
+            hearts = [];
+            for (let i = 0; i < 3; i++) {
+                const x = Math.random() * (canvas.width - 20) + 10; // Random x position
+                const y = Math.random() * (canvas.height - 20) + 10; // Random y position
+                hearts.push({ x, y, collected: false });
+            }
+        }
+
+        function drawHeart(x, y) {
+            ctx.fillStyle = "red";
+            ctx.strokeStyle = "black"; // Black outline
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.bezierCurveTo(x - 10, y - 10, x - 20, y + 10, x, y + 20);
+            ctx.bezierCurveTo(x + 20, y + 10, x + 10, y - 10, x, y);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke(); // Add black outline
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw player
+            ctx.fillStyle = "#ff6699";
+            ctx.strokeStyle = "black"; // Black outline
+            ctx.lineWidth = 2;
+            ctx.fillRect(player.x, player.y, player.size, player.size);
+            ctx.strokeRect(player.x, player.y, player.size, player.size); // Add black outline
+
+            // Draw hearts
+            hearts.forEach(heart => {
+                if (!heart.collected) {
+                    drawHeart(heart.x, heart.y);
+                }
+            });
+        }
+
+        function checkCollision() {
+            hearts.forEach(heart => {
+                if (!heart.collected &&
+                    player.x < heart.x + 10 && player.x + player.size > heart.x &&
+                    player.y < heart.y + 10 && player.y + player.size > heart.y) {
+                    heart.collected = true;
+                }
+            });
+
+            if (hearts.every(h => h.collected) && !gameRestarting) {
+                gameRestarting = true; // Set the flag to prevent multiple alerts
+                setTimeout(() => {
+                    alert("You collected all the hearts! 💖 Here's my love for you!");
+                    restartGame(); // Restart the game after the alert
+                    gameRestarting = false; // Reset the flag after restarting
+                }, 100);
+            }
+        }
+
+        function restartGame() {
+            player = { x: 50, y: 50, size: 20 }; // Reset player position
+            generateHearts(); // Generate new hearts
+            draw(); // Redraw the game
+        }
+
+        document.addEventListener("keydown", (event) => {
+            const speed = 10;
+            if (event.key === "ArrowUp") player.y -= speed;
+            if (event.key === "ArrowDown") player.y += speed;
+            if (event.key === "ArrowLeft") player.x -= speed;
+            if (event.key === "ArrowRight") player.x += speed;
+            checkCollision();
+            draw();
+        });
+
+        // Initialize the game
+        generateHearts();
+        draw();
+    </script>
+</body>
+</html>
